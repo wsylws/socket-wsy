@@ -4,7 +4,7 @@ body, ul, div, p {
   box-sizing: border-box;
   font-size: 14px;
   font-family: 'Helvetica Neue',Helvetica,Arial,'Microsoft Yahei';
-  color: #ede7f6;
+  // color: #ede7f6;
 }
 li {
   list-style: none;
@@ -29,6 +29,7 @@ li {
   width: 100%;
   z-index: 100;
   background: #6e7dbb;
+  color: #ede7f6;
   .onlineNum {
     position: absolute;
     left: 5px;
@@ -120,6 +121,9 @@ li {
         border-bottom: 7px solid #d2deff;
         top: -7px;
       }
+      img {
+        max-width: 100%;
+      }
     }
     .mine_info_user {
       float: right;
@@ -141,6 +145,70 @@ li {
 }
 .content_say {
   height: 120px;
+  position: relative;
+  .say_tools{
+    height: 90%;
+    width: 20px;
+    .emoji {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      img {
+        width: 20px;
+        height: 20px;
+      }
+      img:hover {
+        opacity: 0.5;
+        cursor: pointer;
+      }
+    }
+    .emoji_lists {
+      position: absolute;
+      top: -204px;
+      left: 7px;
+      width: 210px;
+      box-shadow: 0 0 1px #000;
+      background: #fff;
+      display: none;
+      &.active {
+        display: block;
+      }
+    }
+    .emoji_list_title {
+      height: 20px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      div {
+        flex-grow: 1;
+        height: 100%;
+        line-height: 20px;
+        text-align: center;
+        font-size: 12px;
+        &.active {
+          background: #ddd;
+          color: #777;
+        }
+      }
+    }
+    .emoji_list_content {
+      height: 200px;
+      overflow-y: auto;
+      font-size: 0;
+      div {
+        display: none;
+        background: #fff;
+        &.active {
+          display: inline-block;
+        }
+      }
+      img {
+        padding: 4px;
+        float: left;
+        max-width: 45%;
+      }
+    }
+  }
   .say_box {
     display: flex;
     padding: 5px;
@@ -153,8 +221,10 @@ li {
     overflow: auto;
     word-break: break-all;
     color: #000;
-    margin-left: 5px;
+    margin-left: 3px;
+    box-sizing: border-box;
     padding: 5px;
+    resize: none;
     &:focus {
       box-shadow: 0 0 2px #777;
     }
@@ -265,6 +335,7 @@ li {
     line-height: 26px;
     font-size: 15px;
     background: #9facee;
+    color: #ede7f6;
   }
   ul {
     padding: 5px;

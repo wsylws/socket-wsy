@@ -22,7 +22,25 @@ html(lang="en")
               ul.msg
           .content_say
             .say_box
-              .say_info(contenteditable="true")
+
+              .say_tools
+                .emoji_lists
+                  .emoji_list_content
+                    div.active
+                      - for(var i=1; i<50; i++)
+                        img(src="/images/emoji/"+i+".png" data-emoji="[emoji:"+i+"]")
+                    div
+                      - for(var i=1; i<10; i++)
+                        img(src="/images/nongyao/"+i+".gif" data-emoji="[nongyao:"+i+"]")
+                  .emoji_list_title
+                    div.active 系列一
+                    div 系列二
+                .emoji
+                  img(src="/images/emoji.png")
+                
+
+              //- .say_info(contenteditable="true" spellcheck="false")
+              textarea.say_info
               .btns
                 .btn.send_btn(title="ctrl+Enter") 发送
                 .btn.clear_btn 清屏

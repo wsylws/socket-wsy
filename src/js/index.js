@@ -10,6 +10,11 @@ const addRoom = $('.addRoom');
 const roomsList = $('.rooms_list');
 const onlineNum = $('.onlineNum');
 const now = $('.now');
+const emojiL = $('.emoji_lists');
+const emojiTs = $('.emoji_list_title div');
+const emojiCs = $('.emoji_list_content div');
+const emoji = $('.emoji');
+
 let ctrl = false;
 
 // 登录
@@ -145,42 +150,69 @@ info.keydown(function (e) {
 })
 
 socket.on('send msg', function (info) {
-  // msg.append(`<li class="info">
-  //   <p class="info_user others_info_user">${info.name}</p>
-  //   <p class="info_content others_info_content">${info.content}</p>
-  // </li>`)
   let li_info = $('<li class="info"></li>');
   let span_time = $(`<span class="info_time others_info_time">${info.time}</span>`)
   let p_user = $('<p class="info_user others_info_user"></p>').text(info.name).append(span_time);
   let p_content = $('<p class="info_content others_info_content"></p>').text(info.content);
+  
+  p_content.html(turnToImg(p_content.html()));
 
   li_info.append(p_user).append(p_content);
   msg.append(li_info);
 
-  msg.scrollTop(99999999999999)
+  msg.scrollTop(99999999999999);
+})
+
+// 表情包切换
+emojiTs.on('click', function () {
+  let target = $(this);
+  let index = target.index();
+
+  emojiTs.removeClass('active');
+  target.addClass('active');
+
+  emojiCs.removeClass('active');
+  emojiCs.eq(index).addClass('active');
+
+  return false
+})
+
+// 显示表情包列表
+emoji.hover(function () {
+  emojiL.show();
+}, function () {
+  emojiL.hide();
+})
+emojiL.hover(function () {
+  emojiL.show();
+}, function () {
+  emojiL.hide();
+})
+// 
+
+// 输入表情包emoji
+emojiCs.on('click', 'img', function () {
+  let target = $(this);
+  info.val(info.val() + target.data('emoji'));
+  emojiL.hide();
+  info.focus();
 })
 
 function sendMsg () {
-  let content = info.text().trim();
+  let content = info.val().trim();
   if (!content) {
     alert('请输入内容')
     return;
   }
-  info.text('').focus();
+  info.val('').focus();
   socket.emit('send msg', content);
 
-  // msg.append(`<li class="info mine_info">
-  //   <p class="info_user mine_info_user">${$.cookie('name')}</p>
-  //   <p class="info_content mine_info_content">${content}</p>
-  // </li>`)
-
-  // msg.append($(`<li class="info mine_info">
-  //   <p class="info_user mine_info_user">${$.cookie('name')}</p>
-  // </li>`).append($('<p class="info_content mine_info_content"></p>').text(content)))
   let li_info = $('<li class="info mine_info"></li>');
   let span_time = $(`<span class="info_time mine_info_time">${getTime()}</span>`)
   let p_user = $('<p class="info_user mine_info_user"></p>').text($.cookie('name')).prepend(span_time);
   let p_content = $('<p class="info_content mine_info_content"></p>').text(content);
+
+  p_content.html(turnToImg(p_content.html()))
 
   li_info.append(p_user).append(p_content);
   msg.append(li_info);
@@ -202,4 +234,14 @@ function getTime () {
   let second = now.getSeconds().toString().padStart(2, 0);
 
   return year+'/'+month+'/'+date+' '+hour+':'+minute+':'+second
+}
+
+function turnToImg (html) {
+  return html.replace(/\[(emoji|nongyao):(\d+)\]/g, function (match, $1, $2) {
+    if ($1 == 'emoji') {
+      return '<img src="/images/'+$1+'/'+$2+'.png">'
+    } else if ($1 == 'nongyao') {
+      return '<img src="/images/'+$1+'/'+$2+'.gif">'
+    }
+  })
 }
