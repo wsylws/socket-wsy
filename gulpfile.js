@@ -49,8 +49,8 @@ gulp.task('reload', function () {
   reload();
 })
 
-gulp.task('default', ['js', 'css', 'node', 'utils'], function () {
-  browserSync.init({
+gulp.task('default', gulp.series(['js', 'css', 'node', 'utils'], function () {
+  return browserSync({
     proxy: 'http://localhost:3000',
     port: 3001
   })
@@ -58,4 +58,4 @@ gulp.task('default', ['js', 'css', 'node', 'utils'], function () {
   gulp.watch('./src/css/*.scss', ['css', 'reload']);
   gulp.watch('./src/js/*.js', ['js', 'reload']);
   gulp.watch('./views/*.pug', ['reload'])
-})
+}))

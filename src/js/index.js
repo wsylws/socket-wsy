@@ -10,10 +10,6 @@ const addRoom = $('.addRoom');
 const roomsList = $('.rooms_list');
 const onlineNum = $('.onlineNum');
 const now = $('.now');
-const emojiL = $('.emoji_lists');
-const emojiTs = $('.emoji_list_title div');
-const emojiCs = $('.emoji_list_content div');
-const emoji = $('.emoji');
 
 let ctrl = false;
 
@@ -35,7 +31,7 @@ socket.on('refresh users', function (usersName) {
 // 用户名冲突
 socket.on('existed user', function () {
   let name = prompt('您的用户名与已在线的用户冲突，请换名重新登录');
-  while(!name || strLen(name) > 20) {
+  while (!name || strLen(name) > 20) {
     name = prompt('用户名的格式不正确，不能为空或者大于20');
   }
   $.cookie('name', name)
@@ -43,7 +39,7 @@ socket.on('existed user', function () {
 })
 
 // 刷新房间列表
-socket.on('refresh rooms', function ({rooms, active}) {
+socket.on('refresh rooms', function ({ rooms, active }) {
   roomsList.empty();
   for (let room of Object.keys(rooms)) {
     // if (room == active) {
@@ -63,7 +59,7 @@ socket.on('refresh rooms', function ({rooms, active}) {
     if (room == active) {
       li_room.addClass('active_room');
     }
-    
+
     li_room.append(span_room).append(span_num);
     roomsList.append(li_room);
   }
@@ -78,35 +74,40 @@ socket.on('online number', function (num) {
 
 // 添加房间
 addRoom.click(function () {
-  let room = prompt('请输入房间的名字');
-  let exist = false
-  room = room ? room.trim() : '';
-  
-  Array.from($('.rooms_list li .room')).forEach(item => {
-    if (item.innerText == room) {
-      exist = true;
-      alert('房间已经存在');
-    }
-  })
-  let roomLen = strLen(room);
+  let role = $.cookie('role');
+  if (role === 'anchor') {
+    let room = prompt('请输入房间的名字');
+    let exist = false
+    room = room ? room.trim() : '';
 
-  if (roomLen > 20) {
-    alert('房间名字长度超过20');
-    return;
-  }
-  if (roomLen > 0 && !exist) {
-    // $('.rooms_list li').removeClass('active_room');
-    // roomsList.append(`<li class="active_room">${room}</li>`);
-    
-    socket.emit('add room', room);
-    socket.emit('change room', room);
+    Array.from($('.rooms_list li .room')).forEach(item => {
+      if (item.innerText == room) {
+        exist = true;
+        alert('房间已经存在');
+      }
+    })
+    let roomLen = strLen(room);
+
+    if (roomLen > 20) {
+      alert('房间名字长度超过20');
+      return;
+    }
+    if (roomLen > 0 && !exist) {
+      // $('.rooms_list li').removeClass('active_room');
+      // roomsList.append(`<li class="active_room">${room}</li>`);
+
+      socket.emit('add room', room);
+      socket.emit('change room', room);
+    }
+  } else {
+    alert('游客不能创建房间！')
   }
 })
 
 // 切换房间
 roomsList.click(function (e) {
   if ($(e.target).closest('li').attr('class') == 'active_room') return;
-  
+
   let room = $(e.target).closest('li').data('room');
 
   if (!room) return;
@@ -154,8 +155,7 @@ socket.on('send msg', function (info) {
   let span_time = $(`<span class="info_time others_info_time">${info.time}</span>`)
   let p_user = $('<p class="info_user others_info_user"></p>').text(info.name).append(span_time);
   let p_content = $('<p class="info_content others_info_content"></p>').text(info.content);
-  
-  p_content.html(turnToImg(p_content.html()));
+
 
   li_info.append(p_user).append(p_content);
   msg.append(li_info);
@@ -163,42 +163,7 @@ socket.on('send msg', function (info) {
   msg.scrollTop(99999999999999);
 })
 
-// 表情包切换
-emojiTs.on('click', function () {
-  let target = $(this);
-  let index = target.index();
-
-  emojiTs.removeClass('active');
-  target.addClass('active');
-
-  emojiCs.removeClass('active');
-  emojiCs.eq(index).addClass('active');
-
-  return false
-})
-
-// 显示表情包列表
-emoji.hover(function () {
-  emojiL.show();
-}, function () {
-  emojiL.hide();
-})
-emojiL.hover(function () {
-  emojiL.show();
-}, function () {
-  emojiL.hide();
-})
-// 
-
-// 输入表情包emoji
-emojiCs.on('click', 'img', function () {
-  let target = $(this);
-  info.val(info.val() + target.data('emoji'));
-  emojiL.hide();
-  info.focus();
-})
-
-function sendMsg () {
+function sendMsg() {
   let content = info.val().trim();
   if (!content) {
     alert('请输入内容')
@@ -212,19 +177,18 @@ function sendMsg () {
   let p_user = $('<p class="info_user mine_info_user"></p>').text($.cookie('name')).prepend(span_time);
   let p_content = $('<p class="info_content mine_info_content"></p>').text(content);
 
-  p_content.html(turnToImg(p_content.html()))
 
   li_info.append(p_user).append(p_content);
   msg.append(li_info);
-  
+
   msg.scrollTop(99999999999999)
 }
 
-function strLen (str) {
+function strLen(str) {
   return str.replace(/[^\x00-\xff]/g, '00').length
 }
 
-function getTime () {
+function getTime() {
   let now = new Date();
   let year = now.getFullYear();
   let month = now.getMonth() + 1;
@@ -233,15 +197,6 @@ function getTime () {
   let minute = now.getMinutes().toString().padStart(2, 0);
   let second = now.getSeconds().toString().padStart(2, 0);
 
-  return year+'/'+month+'/'+date+' '+hour+':'+minute+':'+second
+  return year + '/' + month + '/' + date + ' ' + hour + ':' + minute + ':' + second
 }
 
-function turnToImg (html) {
-  return html.replace(/\[(emoji|nongyao):(\d+)\]/g, function (match, $1, $2) {
-    if ($1 == 'emoji') {
-      return '<img src="/images/'+$1+'/'+$2+'.png">'
-    } else if ($1 == 'nongyao') {
-      return '<img src="/images/'+$1+'/'+$2+'.gif">'
-    }
-  })
-}
