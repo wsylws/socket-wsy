@@ -5,7 +5,7 @@ var roleInput = document.getElementsByName("role"); //角色
 
 // 点击登陆
 btn.addEventListener('click', function (e) {
-  e.preventDefault();
+  e.preventDefault(); //当点击提交按钮时阻止对表单的提交
 
   var selectvalue = null;   //  selectvalue为radio中选中的值
   for (var i = 0; i < roleInput.length; i++) {

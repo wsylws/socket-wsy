@@ -42,22 +42,11 @@ socket.on('existed user', function () {
 socket.on('refresh rooms', function ({ rooms, active }) {
   roomsList.empty();
   for (let room of Object.keys(rooms)) {
-    // if (room == active) {
-    //   roomsList.append(`<li class="active_room" data-room="${room}">
-    //     <span class="room">${room}</span>
-    //     <span class="usersNum">${rooms[room].length}人</span>
-    //   </li>`)
-    // } else {
-    //   roomsList.append(`<li data-room="${room}">
-    //     <span class="room">${room}</span>
-    //     <span class="usersNum">${rooms[room].length}人</span>
-    //   </li>`)
-    // }
     let li_room = $(`<li data-room="${room}"></li>`);
     let span_room = $('<span class="room"></span>').text(room)
     let span_num = $(`<span class="usersNum">${rooms[room].length}人</span>`);
     if (room == active) {
-      li_room.addClass('active_room');
+      li_room.addClass('active_room'); 
     }
 
     li_room.append(span_room).append(span_num);
@@ -184,7 +173,7 @@ function sendMsg() {
   msg.scrollTop(99999999999999)
 }
 
-function strLen(str) {
+function strLen(str) { // 计算字符串的字节
   return str.replace(/[^\x00-\xff]/g, '00').length
 }
 
